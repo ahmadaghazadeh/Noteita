@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Noteita</string>
+    <string name="notes_screen_title">Notes</string>
+    <string name="top_app_bar_notification">Notification\n</string>
 </resources>

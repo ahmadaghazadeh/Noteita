@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,11 +14,15 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ahmad.aghazadeh.noteita.data.NotesDataSource
 import com.ahmad.aghazadeh.noteita.model.Note
+import com.ahmad.aghazadeh.noteita.screens.NoteViewModel
 import com.ahmad.aghazadeh.noteita.screens.NotesScreen
 import com.ahmad.aghazadeh.noteita.ui.theme.NoteitaTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,23 +33,26 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val notes = remember{
-                        mutableStateListOf<Note>()
-                    }
-                    NotesScreen(notes=notes, onAddNote = {
-                        notes.add(it)
-                        Toast.makeText(this,"Note added", Toast.LENGTH_SHORT).show()
-                    }, onRemoveNote = {
-                        notes.remove(it)
-                        Toast.makeText(this,"Note removed", Toast.LENGTH_SHORT).show()
-                    })
+                    val noteViewModel : NoteViewModel by viewModels()
+                    NotesApp(noteViewModel)
                 }
             }
         }
     }
 }
+@Composable
+fun NotesApp(noteViewModel: NoteViewModel=viewModel()){
 
-@Preview(showBackground = true)
+    val notesList = noteViewModel.getAllNotes()
+
+    NotesScreen(notes=notesList, onAddNote = {
+        noteViewModel.addNote(it)
+    }, onRemoveNote = {
+        noteViewModel.removeNote(it)
+    })
+
+}
+
 @Composable
 fun GreetingPreview() {
     NoteitaTheme {
